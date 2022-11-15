@@ -1,0 +1,38 @@
+version: '3.9'
+services:
+  backend:
+    container_name: app_backend
+    build: ./
+    restart: 'always'
+    platform: linux/x86_64
+    command: npm run dev
+    ports:
+      - 3001:3001
+    environment:
+      - APP_PORT=3001
+      - JWT_SECRET=jwt_secret
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_NAME=cookmaster
+      - DB_HOST=db
+      - DB_PORT=5432
+    working_dir: /app-backend
+    volumes:
+      - ./:/app-backend
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: postgres
+    restart: 'always'
+    platform: linux/x86_64
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
