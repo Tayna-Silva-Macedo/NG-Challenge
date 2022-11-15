@@ -14,5 +14,6 @@ app.get('/', (req, res) => {
     res.status(http_status_codes_1.StatusCodes.OK).send('Express + TypeScript');
 });
 app.use('/register', routes_1.default.register);
+app.use('/login', routes_1.default.login);
 app.use(error_1.default);
 exports.default = app;

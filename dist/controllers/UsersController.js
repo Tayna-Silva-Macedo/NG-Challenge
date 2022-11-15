@@ -17,6 +17,10 @@ class UsersController {
             const newUser = yield this.usersService.create(req.body);
             return res.status(http_status_codes_1.StatusCodes.CREATED).json(newUser);
         });
+        this.login = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const token = yield this.usersService.login(req.body);
+            return res.status(http_status_codes_1.StatusCodes.OK).json({ token });
+        });
     }
 }
 exports.default = UsersController;

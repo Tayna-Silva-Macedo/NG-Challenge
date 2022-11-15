@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const http_status_codes_1 = require("http-status-codes");
 const Bcryptjs_1 = __importDefault(require("../helpers/Bcryptjs"));
 const HttpException_1 = __importDefault(require("../helpers/HttpException"));
+const Token_1 = __importDefault(require("../helpers/Token"));
 class UsersService {
     constructor(usersModel, accountsService) {
         this.usersModel = usersModel;
@@ -29,18 +30,19 @@ class UsersService {
         if (!regexPassword.test(password))
             throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'invalid password');
     }
-    usernameExists(username) {
+    findByUsername(username, returnUser) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.usersModel.findOne({ where: { username } });
-            if (user)
+            if (user && !returnUser)
                 throw new HttpException_1.default(http_status_codes_1.StatusCodes.CONFLICT, 'user already registered');
+            return user;
         });
     }
     create(obj) {
         return __awaiter(this, void 0, void 0, function* () {
             UsersService.validUsername(obj.username);
             UsersService.validPassword(obj.password);
-            yield this.usernameExists(obj.username);
+            yield this.findByUsername(obj.username, false);
             const accountId = yield this.accountsService.create();
             const passwordHash = Bcryptjs_1.default.generate(obj.password);
             const newUser = yield this.usersModel.create({
@@ -49,6 +51,21 @@ class UsersService {
                 accountId,
             });
             return newUser;
+        });
+    }
+    login(obj) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.findByUsername(obj.username, true);
+            if (!user || !Bcryptjs_1.default.compare(obj.password, user.password)) {
+                throw new HttpException_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'Incorrect email or password');
+            }
+            const payload = {
+                id: user.id,
+                username: user.username,
+                accountId: user.accountId,
+            };
+            const token = Token_1.default.create(payload);
+            return token;
         });
     }
 }

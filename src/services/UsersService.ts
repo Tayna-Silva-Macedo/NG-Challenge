@@ -2,6 +2,8 @@ import { StatusCodes } from 'http-status-codes';
 import User from '../database/models/User';
 import Bcryptjs from '../helpers/Bcryptjs';
 import HttpException from '../helpers/HttpException';
+import Token from '../helpers/Token';
+import IPayload from '../interfaces/IPayload';
 import IUser from '../interfaces/IUser';
 import IUsersService from '../interfaces/services/IUsersService';
 import AccountsService from './AccountsService';
@@ -21,22 +23,28 @@ export default class UsersService implements IUsersService {
   }
 
   private static validPassword(password: string): void {
-    const regexPassword = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/
+    const regexPassword = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
-    if(!regexPassword.test(password)) throw new HttpException(StatusCodes.BAD_REQUEST, 'invalid password')
+    if (!regexPassword.test(password))
+      throw new HttpException(StatusCodes.BAD_REQUEST, 'invalid password');
   }
 
-  private async usernameExists(username: string): Promise<void> {
-    const user = await this.usersModel.findOne({ where: { username } });    
+  private async findByUsername(
+    username: string,
+    returnUser: boolean
+  ): Promise<User | null> {
+    const user = await this.usersModel.findOne({ where: { username } });
 
-    if (user)
+    if (user && !returnUser)
       throw new HttpException(StatusCodes.CONFLICT, 'user already registered');
+
+    return user;
   }
 
-  async create(obj: IUser): Promise<IUser> {    
+  async create(obj: IUser): Promise<IUser> {
     UsersService.validUsername(obj.username);
     UsersService.validPassword(obj.password);
-    await this.usernameExists(obj.username); 
+    await this.findByUsername(obj.username, false);
 
     const accountId = await this.accountsService.create();
 
@@ -49,5 +57,26 @@ export default class UsersService implements IUsersService {
     });
 
     return newUser;
+  }
+
+  async login(obj: IUser): Promise<string> {
+    const user = await this.findByUsername(obj.username, true);
+
+    if (!user || !Bcryptjs.compare(obj.password, user.password)) {
+      throw new HttpException(
+        StatusCodes.UNAUTHORIZED,
+        'Incorrect email or password'
+      );
+    }
+
+    const payload: IPayload = {
+      id: user.id,
+      username: user.username,
+      accountId: user.accountId,
+    };
+
+    const token = Token.create(payload);
+
+    return token;
   }
 }

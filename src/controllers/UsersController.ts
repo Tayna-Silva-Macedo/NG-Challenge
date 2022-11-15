@@ -10,4 +10,10 @@ export default class UsersController {
 
     return res.status(StatusCodes.CREATED).json(newUser);
   };
+
+  public login = async (req: Request, res: Response) => {
+    const token = await this.usersService.login(req.body);
+
+    return res.status(StatusCodes.OK).json({ token });
+  };
 }

@@ -13,6 +13,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/register', routers.register);
+app.use('/login', routers.login);
 
 app.use(errorMiddleware);
 
