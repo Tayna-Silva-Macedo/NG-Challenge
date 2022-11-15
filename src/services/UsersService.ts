@@ -19,6 +19,12 @@ export default class UsersService implements IUsersService {
       );
   }
 
+  private static validPassword(password: string): void {
+    const regexPassword = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/
+
+    if(!regexPassword.test(password)) throw new HttpException(StatusCodes.BAD_REQUEST, 'invalid password')
+  }
+
   private async usernameExists(username: string): Promise<void> {
     const user = await this.usersModel.findOne({ where: { username } });    
 
@@ -28,6 +34,7 @@ export default class UsersService implements IUsersService {
 
   async create(obj: IUser): Promise<IUser> {    
     UsersService.validUsername(obj.username);
+    UsersService.validPassword(obj.password);
     await this.usernameExists(obj.username); 
 
     const accountId = await this.accountsService.create();

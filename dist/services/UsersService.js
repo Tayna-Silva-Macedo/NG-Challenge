@@ -23,6 +23,11 @@ class UsersService {
         if (username.length < 3)
             throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'username must be at least 3 characters');
     }
+    static validPassword(password) {
+        const regexPassword = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        if (!regexPassword.test(password))
+            throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'invalid password');
+    }
     usernameExists(username) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.usersModel.findOne({ where: { username } });
@@ -33,6 +38,7 @@ class UsersService {
     create(obj) {
         return __awaiter(this, void 0, void 0, function* () {
             UsersService.validUsername(obj.username);
+            UsersService.validPassword(obj.password);
             yield this.usernameExists(obj.username);
             const accountId = yield this.accountsService.create();
             const newUser = yield this.usersModel.create({
