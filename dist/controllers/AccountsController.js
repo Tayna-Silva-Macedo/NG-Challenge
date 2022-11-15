@@ -9,21 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-class AccountsService {
-    constructor(accountsModel) {
-        this.accountsModel = accountsModel;
-    }
-    create() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const newAccount = yield this.accountsModel.create({ balance: 100 });
-            return newAccount.id;
-        });
-    }
-    findBalanceById(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const account = yield this.accountsModel.findByPk(id);
-            return account === null || account === void 0 ? void 0 : account.balance;
+const http_status_codes_1 = require("http-status-codes");
+class AccountsController {
+    constructor(accountsService) {
+        this.accountsService = accountsService;
+        this.findBalanceById = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const balance = yield this.accountsService.findBalanceById(res.locals.accountId);
+            return res.status(http_status_codes_1.StatusCodes.OK).json({ balance });
         });
     }
 }
-exports.default = AccountsService;
+exports.default = AccountsController;

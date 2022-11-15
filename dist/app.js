@@ -15,5 +15,6 @@ app.get('/', (req, res) => {
 });
 app.use('/register', routes_1.default.register);
 app.use('/login', routes_1.default.login);
+app.use('/balance', routes_1.default.balance);
 app.use(error_1.default);
 exports.default = app;

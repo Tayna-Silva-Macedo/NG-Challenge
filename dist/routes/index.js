@@ -5,4 +5,5 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const registerRoute_1 = __importDefault(require("./registerRoute"));
 const loginRoute_1 = __importDefault(require("./loginRoute"));
-exports.default = { register: registerRoute_1.default, login: loginRoute_1.default };
+const balanceRoute_1 = __importDefault(require("./balanceRoute"));
+exports.default = { register: registerRoute_1.default, login: loginRoute_1.default, balance: balanceRoute_1.default };
