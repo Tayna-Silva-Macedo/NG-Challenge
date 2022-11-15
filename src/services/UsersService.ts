@@ -1,5 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import User from '../database/models/User';
+import Bcryptjs from '../helpers/Bcryptjs';
 import HttpException from '../helpers/HttpException';
 import IUser from '../interfaces/IUser';
 import IUsersService from '../interfaces/services/IUsersService';
@@ -39,9 +40,11 @@ export default class UsersService implements IUsersService {
 
     const accountId = await this.accountsService.create();
 
+    const passwordHash = Bcryptjs.generate(obj.password);
+
     const newUser = await this.usersModel.create({
       username: obj.username,
-      password: obj.password,
+      password: passwordHash,
       accountId,
     });
 

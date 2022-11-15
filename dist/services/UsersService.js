@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_status_codes_1 = require("http-status-codes");
+const Bcryptjs_1 = __importDefault(require("../helpers/Bcryptjs"));
 const HttpException_1 = __importDefault(require("../helpers/HttpException"));
 class UsersService {
     constructor(usersModel, accountsService) {
@@ -41,9 +42,10 @@ class UsersService {
             UsersService.validPassword(obj.password);
             yield this.usernameExists(obj.username);
             const accountId = yield this.accountsService.create();
+            const passwordHash = Bcryptjs_1.default.generate(obj.password);
             const newUser = yield this.usersModel.create({
                 username: obj.username,
-                password: obj.password,
+                password: passwordHash,
                 accountId,
             });
             return newUser;
