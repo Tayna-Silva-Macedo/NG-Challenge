@@ -5,5 +5,6 @@ import transactionsController from '../utils/factories/transactionsController';
 const router = Router();
 
 router.post('/', auth, transactionsController.create);
+router.get('/', auth, transactionsController.findAll);
 
 export default router;

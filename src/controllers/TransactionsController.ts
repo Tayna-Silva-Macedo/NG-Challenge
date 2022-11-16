@@ -15,4 +15,10 @@ export default class TransactionsController {
 
     return res.status(StatusCodes.CREATED).json(newTransaction);
   };
+
+  public findAll = async (req: Request, res: Response) => {
+    const transactions = await this.transactionsService.findAll(res.locals.id);
+
+    return res.status(StatusCodes.OK).json(transactions);
+  };
 }

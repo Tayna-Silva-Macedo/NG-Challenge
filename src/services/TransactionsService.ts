@@ -1,4 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
+import { Op } from 'sequelize';
 import Account from '../database/models/Account';
 import Transaction from '../database/models/Transaction';
 import User from '../database/models/User';
@@ -24,7 +25,7 @@ export default class TransactionsService implements ITransactionsService {
     }
   }
 
-  private async validbalance(id: number, value: number): Promise<void> {
+  private async validBalance(id: number, value: number): Promise<void> {
     const account = await this.accountsModel.findByPk(id);
 
     if (!account) {
@@ -55,7 +56,7 @@ export default class TransactionsService implements ITransactionsService {
     value: number,
   ): Promise<Transaction> {
     await TransactionsService.validUsername(usernameCashOut, usernameCashIn);
-    await this.validbalance(id, value);
+    await this.validBalance(id, value);
 
     const idCashOut = id;
     const idCashIn = await this.findIdCashIn(usernameCashIn);
@@ -70,5 +71,15 @@ export default class TransactionsService implements ITransactionsService {
     });
 
     return newTransaction;
+  }
+
+  async findAll(userId: number): Promise<Transaction[]> {
+    const transactions = await this.transactionsModel.findAll({
+      where: {
+        [Op.or]: [{ debitedAccountId: userId }, { creditedAccountId: userId }],
+      },
+    });
+
+    return transactions;
   }
 }
