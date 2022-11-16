@@ -73,12 +73,20 @@ export default class TransactionsService implements ITransactionsService {
     return newTransaction;
   }
 
-  async findAll(userId: number): Promise<Transaction[]> {
+  async findAll(accountId: number, filter?: string): Promise<Transaction[]> {
     const transactions = await this.transactionsModel.findAll({
       where: {
-        [Op.or]: [{ debitedAccountId: userId }, { creditedAccountId: userId }],
+        [Op.or]: [{ debitedAccountId: accountId }, { creditedAccountId: accountId }],
       },
     });
+
+    if (filter === 'cashOut') {
+      return transactions.filter((transaction) => transaction.debitedAccountId === accountId);
+    }
+
+    if (filter === 'cashIn') {
+      return transactions.filter((transaction) => transaction.creditedAccountId === accountId);
+    }
 
     return transactions;
   }
