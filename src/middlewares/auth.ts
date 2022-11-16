@@ -6,8 +6,7 @@ import Token from '../helpers/Token';
 const auth = (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
-  if (!authorization)
-    throw new HttpException(StatusCodes.UNAUTHORIZED, 'Token not found');
+  if (!authorization) { throw new HttpException(StatusCodes.UNAUTHORIZED, 'Token not found'); }
 
   try {
     const payload = Token.validate(authorization);
@@ -16,7 +15,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
   } catch (error) {
     throw new HttpException(
       StatusCodes.UNAUTHORIZED,
-      'Token must be a valid token'
+      'Token must be a valid token',
     );
   }
 };

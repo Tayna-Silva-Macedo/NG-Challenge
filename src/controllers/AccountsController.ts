@@ -7,7 +7,7 @@ export default class AccountsController {
 
   public findBalanceById = async (req: Request, res: Response) => {
     const balance = await this.accountsService.findBalanceById(
-      res.locals.accountId
+      res.locals.accountId,
     );
 
     return res.status(StatusCodes.OK).json({ balance });

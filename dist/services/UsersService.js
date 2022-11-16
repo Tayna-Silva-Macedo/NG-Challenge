@@ -17,24 +17,30 @@ const Bcryptjs_1 = __importDefault(require("../helpers/Bcryptjs"));
 const HttpException_1 = __importDefault(require("../helpers/HttpException"));
 const Token_1 = __importDefault(require("../helpers/Token"));
 class UsersService {
-    constructor(usersModel, accountsService) {
+    constructor(usersModel, accountsModel) {
         this.usersModel = usersModel;
-        this.accountsService = accountsService;
+        this.accountsModel = accountsModel;
     }
     static validUsername(username) {
-        if (username.length < 3)
+        if (username.length < 3) {
             throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'username must be at least 3 characters');
+        }
     }
     static validPassword(password) {
         const regexPassword = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
-        if (!regexPassword.test(password))
+        if (!regexPassword.test(password)) {
             throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'invalid password');
+        }
     }
     findByUsername(username, returnUser) {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.usersModel.findOne({ where: { username } });
-            if (user && !returnUser)
+            if (user && !returnUser) {
                 throw new HttpException_1.default(http_status_codes_1.StatusCodes.CONFLICT, 'user already registered');
+            }
+            if (!user) {
+                throw new HttpException_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'user not found');
+            }
             return user;
         });
     }
@@ -43,7 +49,8 @@ class UsersService {
             UsersService.validUsername(obj.username);
             UsersService.validPassword(obj.password);
             yield this.findByUsername(obj.username, false);
-            const accountId = yield this.accountsService.create();
+            const newAccount = yield this.accountsModel.create({ balance: 100 });
+            const accountId = newAccount.id;
             const passwordHash = Bcryptjs_1.default.generate(obj.password);
             const newUser = yield this.usersModel.create({
                 username: obj.username,

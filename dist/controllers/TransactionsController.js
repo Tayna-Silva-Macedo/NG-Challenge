@@ -8,24 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_status_codes_1 = require("http-status-codes");
-const HttpException_1 = __importDefault(require("../helpers/HttpException"));
-class AccountsService {
-    constructor(accountsModel) {
-        this.accountsModel = accountsModel;
-    }
-    findBalanceById(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const account = yield this.accountsModel.findByPk(id);
-            if (!account) {
-                throw new HttpException_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'balance not found');
-            }
-            return account.balance;
+class TransactionsController {
+    constructor(transactionsService) {
+        this.transactionsService = transactionsService;
+        this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const newTransaction = yield this.transactionsService.create(res.locals.id, res.locals.username, req.body.username, req.body.value);
+            return res.status(http_status_codes_1.StatusCodes.CREATED).json(newTransaction);
         });
     }
 }
-exports.default = AccountsService;
+exports.default = TransactionsController;

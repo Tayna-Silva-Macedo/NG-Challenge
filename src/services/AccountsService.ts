@@ -1,16 +1,20 @@
-import Account from "../database/models/Account";
-import IAccountsService from "../interfaces/services/IAccountsService";
+import { StatusCodes } from 'http-status-codes';
+import Account from '../database/models/Account';
+import HttpException from '../helpers/HttpException';
+import IAccountsService from '../interfaces/services/IAccountsService';
 
 export default class AccountsService implements IAccountsService {
-  constructor(private accountsModel: typeof Account) {}
-  
-  async create(): Promise<number> {
-    const newAccount = await this.accountsModel.create({balance: 100});
-    return newAccount.id;
-  }
+  constructor(
+    private accountsModel: typeof Account,
+  ) {}
 
-  async findBalanceById(id: number): Promise<number | undefined> {
+  async findBalanceById(id: number): Promise<number> {
     const account = await this.accountsModel.findByPk(id);
-    return account?.balance;
+
+    if (!account) {
+      throw new HttpException(StatusCodes.NOT_FOUND, 'balance not found');
+    }
+
+    return account.balance;
   }
 }
