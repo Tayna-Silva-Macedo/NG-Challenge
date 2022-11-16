@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_status_codes_1 = require("http-status-codes");
+const sequelize_1 = require("sequelize");
 const HttpException_1 = __importDefault(require("../helpers/HttpException"));
 class TransactionsService {
     constructor(transactionsModel, accountsModel, usersModel) {
@@ -27,7 +28,7 @@ class TransactionsService {
             }
         });
     }
-    validbalance(id, value) {
+    validBalance(id, value) {
         return __awaiter(this, void 0, void 0, function* () {
             const account = yield this.accountsModel.findByPk(id);
             if (!account) {
@@ -52,7 +53,7 @@ class TransactionsService {
     create(id, usernameCashOut, usernameCashIn, value) {
         return __awaiter(this, void 0, void 0, function* () {
             yield TransactionsService.validUsername(usernameCashOut, usernameCashIn);
-            yield this.validbalance(id, value);
+            yield this.validBalance(id, value);
             const idCashOut = id;
             const idCashIn = yield this.findIdCashIn(usernameCashIn);
             yield this.accountsModel.decrement({ balance: value }, { where: { id: idCashOut } });
@@ -63,6 +64,22 @@ class TransactionsService {
                 value,
             });
             return newTransaction;
+        });
+    }
+    findAll(accountId, filter) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const transactions = yield this.transactionsModel.findAll({
+                where: {
+                    [sequelize_1.Op.or]: [{ debitedAccountId: accountId }, { creditedAccountId: accountId }],
+                },
+            });
+            if (filter === 'cashOut') {
+                return transactions.filter((transaction) => transaction.debitedAccountId === accountId);
+            }
+            if (filter === 'cashIn') {
+                return transactions.filter((transaction) => transaction.creditedAccountId === accountId);
+            }
+            return transactions;
         });
     }
 }

@@ -13,7 +13,7 @@ services:
       - JWT_SECRET=jwt_secret
       - DB_USER=postgres
       - DB_PASS=postgres
-      - DB_NAME=cookmaster
+      - DB_NAME=ngCash
       - DB_HOST=db
       - DB_PORT=5432
     working_dir: /app-backend

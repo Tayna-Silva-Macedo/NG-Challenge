@@ -38,7 +38,7 @@ class UsersService {
             if (user && !returnUser) {
                 throw new HttpException_1.default(http_status_codes_1.StatusCodes.CONFLICT, 'user already registered');
             }
-            if (!user) {
+            if (!user && returnUser) {
                 throw new HttpException_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'user not found');
             }
             return user;

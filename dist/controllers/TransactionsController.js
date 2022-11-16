@@ -17,6 +17,18 @@ class TransactionsController {
             const newTransaction = yield this.transactionsService.create(res.locals.id, res.locals.username, req.body.username, req.body.value);
             return res.status(http_status_codes_1.StatusCodes.CREATED).json(newTransaction);
         });
+        this.findAll = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const transactions = yield this.transactionsService.findAll(res.locals.accountId);
+            return res.status(http_status_codes_1.StatusCodes.OK).json(transactions);
+        });
+        this.findAllCashOut = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const transactions = yield this.transactionsService.findAll(res.locals.accountId, 'cashOut');
+            return res.status(http_status_codes_1.StatusCodes.OK).json(transactions);
+        });
+        this.findAllCashIn = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const transactions = yield this.transactionsService.findAll(res.locals.accountId, 'cashIn');
+            return res.status(http_status_codes_1.StatusCodes.OK).json(transactions);
+        });
     }
 }
 exports.default = TransactionsController;
