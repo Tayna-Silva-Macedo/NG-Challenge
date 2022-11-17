@@ -17,19 +17,28 @@ export default class TransactionsController {
   };
 
   public findAll = async (req: Request, res: Response) => {
-    const transactions = await this.transactionsService.findAll(res.locals.accountId);
+    const transactions = await this.transactionsService.findAll(
+      res.locals.accountId,
+      req.query.date as string | undefined,
+    );
 
     return res.status(StatusCodes.OK).json(transactions);
   };
 
-  public findAllCashOut = async (req:Request, res: Response) => {
-    const transactions = await this.transactionsService.findAll(res.locals.accountId, 'cashOut');
+  public findCashOut = async (req: Request, res: Response) => {
+    const transactions = await this.transactionsService.findCashOut(
+      res.locals.accountId,
+      req.query.date as string | undefined,
+    );
 
     return res.status(StatusCodes.OK).json(transactions);
   };
 
-  public findAllCashIn = async (req:Request, res: Response) => {
-    const transactions = await this.transactionsService.findAll(res.locals.accountId, 'cashIn');
+  public findCashIn = async (req: Request, res: Response) => {
+    const transactions = await this.transactionsService.findCashIn(
+      res.locals.accountId,
+      req.query.date as string | undefined,
+    );
 
     return res.status(StatusCodes.OK).json(transactions);
   };

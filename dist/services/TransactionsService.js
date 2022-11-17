@@ -66,18 +66,47 @@ class TransactionsService {
             return newTransaction;
         });
     }
-    findAll(accountId, filter) {
+    static filterDate(transactions, date) {
+        return transactions.filter((transaction) => transaction.createdAt.toISOString().startsWith(date));
+    }
+    findAll(accountId, date) {
         return __awaiter(this, void 0, void 0, function* () {
             const transactions = yield this.transactionsModel.findAll({
                 where: {
-                    [sequelize_1.Op.or]: [{ debitedAccountId: accountId }, { creditedAccountId: accountId }],
+                    [sequelize_1.Op.or]: [
+                        { debitedAccountId: accountId },
+                        { creditedAccountId: accountId },
+                    ],
                 },
             });
-            if (filter === 'cashOut') {
-                return transactions.filter((transaction) => transaction.debitedAccountId === accountId);
+            if (date) {
+                return TransactionsService.filterDate(transactions, date);
             }
-            if (filter === 'cashIn') {
-                return transactions.filter((transaction) => transaction.creditedAccountId === accountId);
+            return transactions;
+        });
+    }
+    findCashOut(accountId, date) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const transactions = yield this.transactionsModel.findAll({
+                where: {
+                    debitedAccountId: accountId,
+                },
+            });
+            if (date) {
+                return TransactionsService.filterDate(transactions, date);
+            }
+            return transactions;
+        });
+    }
+    findCashIn(accountId, date) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const transactions = yield this.transactionsModel.findAll({
+                where: {
+                    creditedAccountId: accountId,
+                },
+            });
+            if (date) {
+                return TransactionsService.filterDate(transactions, date);
             }
             return transactions;
         });

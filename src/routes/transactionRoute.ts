@@ -6,7 +6,7 @@ const router = Router();
 
 router.post('/', auth, transactionsController.create);
 router.get('/', auth, transactionsController.findAll);
-router.get('/cash-out', auth, transactionsController.findAllCashOut);
-router.get('/cash-in', auth, transactionsController.findAllCashIn);
+router.get('/cash-out', auth, transactionsController.findCashOut);
+router.get('/cash-in', auth, transactionsController.findCashIn);
 
 export default router;

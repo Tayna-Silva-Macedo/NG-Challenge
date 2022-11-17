@@ -7,5 +7,7 @@ export default interface ITransactionsService {
     usernameCashIn: string,
     value: number
   ): Promise<Transaction>;
-  findAll(accountId: number, filter?: string): Promise<Transaction[]>
+  findAll(accountId: number, date?: string | undefined): Promise<Transaction[]>;
+  findCashOut(accountId: number, date?: string | undefined): Promise<Transaction[]>;
+  findCashIn(accountId: number, date?: string | undefined): Promise<Transaction[]>;
 }

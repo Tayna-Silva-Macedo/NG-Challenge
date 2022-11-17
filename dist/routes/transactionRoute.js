@@ -9,6 +9,6 @@ const transactionsController_1 = __importDefault(require("../utils/factories/tra
 const router = (0, express_1.Router)();
 router.post('/', auth_1.default, transactionsController_1.default.create);
 router.get('/', auth_1.default, transactionsController_1.default.findAll);
-router.get('/cash-out', auth_1.default, transactionsController_1.default.findAllCashOut);
-router.get('/cash-in', auth_1.default, transactionsController_1.default.findAllCashIn);
+router.get('/cash-out', auth_1.default, transactionsController_1.default.findCashOut);
+router.get('/cash-in', auth_1.default, transactionsController_1.default.findCashIn);
 exports.default = router;

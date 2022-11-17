@@ -73,19 +73,61 @@ export default class TransactionsService implements ITransactionsService {
     return newTransaction;
   }
 
-  async findAll(accountId: number, filter?: string): Promise<Transaction[]> {
+  private static filterDate(transactions: Transaction[], date: string): Transaction[] {
+    return transactions.filter(
+      (transaction) => transaction.createdAt.toISOString().startsWith(date),
+    );
+  }
+
+  async findAll(
+    accountId: number,
+    date?: string | undefined,
+  ): Promise<Transaction[]> {
     const transactions = await this.transactionsModel.findAll({
       where: {
-        [Op.or]: [{ debitedAccountId: accountId }, { creditedAccountId: accountId }],
+        [Op.or]: [
+          { debitedAccountId: accountId },
+          { creditedAccountId: accountId },
+        ],
       },
     });
 
-    if (filter === 'cashOut') {
-      return transactions.filter((transaction) => transaction.debitedAccountId === accountId);
+    if (date) {
+      return TransactionsService.filterDate(transactions, date);
     }
 
-    if (filter === 'cashIn') {
-      return transactions.filter((transaction) => transaction.creditedAccountId === accountId);
+    return transactions;
+  }
+
+  async findCashOut(
+    accountId: number,
+    date?: string | undefined,
+  ): Promise<Transaction[]> {
+    const transactions = await this.transactionsModel.findAll({
+      where: {
+        debitedAccountId: accountId,
+      },
+    });
+
+    if (date) {
+      return TransactionsService.filterDate(transactions, date);
+    }
+
+    return transactions;
+  }
+
+  async findCashIn(
+    accountId: number,
+    date?: string | undefined,
+  ): Promise<Transaction[]> {
+    const transactions = await this.transactionsModel.findAll({
+      where: {
+        creditedAccountId: accountId,
+      },
+    });
+
+    if (date) {
+      return TransactionsService.filterDate(transactions, date);
     }
 
     return transactions;
