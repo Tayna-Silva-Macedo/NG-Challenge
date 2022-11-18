@@ -5,7 +5,8 @@ import chaiHttp from 'chai-http'
 import Account from '../../database/models/Account';
 import User from '../../database/models/User';
 
-import { accountMock, userCreatedMock, userMock } from './mocks/balance';
+import { accountOutput } from './mocks/account';
+import { userCreated, userFind } from './mocks/user';
 
 import { Response } from 'superagent';
 import app from '../../app';
@@ -66,10 +67,10 @@ describe('Testes da rota /balance', () => {
     let responseBalance: Response;
 
     before(async () => {
-      sinon.stub(User, 'create').resolves(userCreatedMock as User);
-      sinon.stub(User, 'findOne').resolves(userMock as User);
+      sinon.stub(User, 'create').resolves(userCreated as User);
+      sinon.stub(User, 'findOne').resolves(userFind as User);
       sinon.stub(Account, 'create').resolves();
-      sinon.stub(Account, 'findByPk').resolves(accountMock as Account);
+      sinon.stub(Account, 'findByPk').resolves(accountOutput as Account);
 
       responseRegister = await chai.request(app).post('/register').send({
         username: 'taynasm',
