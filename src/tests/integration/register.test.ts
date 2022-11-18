@@ -71,11 +71,34 @@ describe('Testes da rota /register', function () {
     });
   });
 
-  // describe('Verifica se não é possível cadastrar um usuário com username que já existe', function () {
-  //   it('', function () {});
-  // });
+  describe('Verifica se não é possível cadastrar um usuário com username que já existe', function () {
+    let responseRegister: Response;
 
-  // describe('Verifica se é possível cadastrar um usuário com sucesso', function () {
-  //   it('', function () {});
-  // });
+    before(async () => {
+      sinon.stub(User, 'findOne').resolves(userFind as User);
+
+      responseRegister = await chai.request(app).post('/register').send({
+        username: 'taynasm',
+        password: '1234567AbC',
+      });
+    });
+
+    after(() => {
+      sinon.restore();
+    });
+
+    it('retorna status 409', () => {
+      expect(responseRegister.status).to.be.equal(409);
+    });
+
+    it('retorna uma mensagem de erro', () => {
+      expect(responseRegister.body).to.be.deep.equal({
+        message: 'user already registered',
+      });
+    });
+  });
 });
+
+// describe('Verifica se é possível cadastrar um usuário com sucesso', function () {
+//   it('', function () {});
+// });
