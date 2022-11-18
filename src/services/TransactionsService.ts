@@ -13,20 +13,23 @@ export default class TransactionsService implements ITransactionsService {
     private usersModel: typeof User,
   ) {}
 
-  private static async validUsername(
+  private static validateUsername(
     usernameCashOut: string,
     usernameCashIn: string,
-  ): Promise<void> {
+  ): void {
     if (usernameCashIn === usernameCashOut) {
       throw new HttpException(
         StatusCodes.BAD_REQUEST,
-        'cannot transfer to self',
+        'cannot transfer to yourself',
       );
     }
   }
 
-  private async validBalance(id: number, value: number): Promise<void> {
-    const account = await this.accountsModel.findByPk(id);
+  private async validateBalance(
+    accountId: number,
+    value: number,
+  ): Promise<void> {
+    const account = await this.accountsModel.findByPk(accountId);
 
     if (!account) {
       throw new HttpException(StatusCodes.NOT_FOUND, 'account not found');
@@ -49,20 +52,34 @@ export default class TransactionsService implements ITransactionsService {
     return user.id;
   }
 
+  private async updateBalance(
+    value: number,
+    idCashOut: number,
+    idCashIn: number,
+  ): Promise<void> {
+    await this.accountsModel.decrement(
+      { balance: value },
+      { where: { id: idCashOut } },
+    );
+    await this.accountsModel.increment(
+      { balance: value },
+      { where: { id: idCashIn } },
+    );
+  }
+
   async create(
-    id: number,
+    accountId: number,
     usernameCashOut: string,
     usernameCashIn: string,
     value: number,
   ): Promise<Transaction> {
-    await TransactionsService.validUsername(usernameCashOut, usernameCashIn);
-    await this.validBalance(id, value);
+    TransactionsService.validateUsername(usernameCashOut, usernameCashIn);
+    await this.validateBalance(accountId, value);
 
-    const idCashOut = id;
+    const idCashOut = accountId;
     const idCashIn = await this.findIdCashIn(usernameCashIn);
 
-    await this.accountsModel.decrement({ balance: value }, { where: { id: idCashOut } });
-    await this.accountsModel.increment({ balance: value }, { where: { id: idCashIn } });
+    await this.updateBalance(value, idCashOut, idCashIn);
 
     const newTransaction = await this.transactionsModel.create({
       debitedAccountId: idCashOut,
@@ -73,15 +90,17 @@ export default class TransactionsService implements ITransactionsService {
     return newTransaction;
   }
 
-  private static filterDate(transactions: Transaction[], date: string): Transaction[] {
-    return transactions.filter(
-      (transaction) => transaction.createdAt.toISOString().startsWith(date),
-    );
+  private static filterDate(
+    transactions: Transaction[],
+    date: string,
+  ): Transaction[] {
+    return transactions.filter((transaction) =>
+      transaction.createdAt.toISOString().startsWith(date));
   }
 
   async findAll(
     accountId: number,
-    date?: string | undefined,
+    date: string | undefined,
   ): Promise<Transaction[]> {
     const transactions = await this.transactionsModel.findAll({
       where: {
@@ -101,7 +120,7 @@ export default class TransactionsService implements ITransactionsService {
 
   async findCashOut(
     accountId: number,
-    date?: string | undefined,
+    date: string | undefined,
   ): Promise<Transaction[]> {
     const transactions = await this.transactionsModel.findAll({
       where: {
@@ -118,7 +137,7 @@ export default class TransactionsService implements ITransactionsService {
 
   async findCashIn(
     accountId: number,
-    date?: string | undefined,
+    date: string | undefined,
   ): Promise<Transaction[]> {
     const transactions = await this.transactionsModel.findAll({
       where: {

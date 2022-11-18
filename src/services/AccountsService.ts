@@ -12,7 +12,7 @@ export default class AccountsService implements IAccountsService {
     const account = await this.accountsModel.findByPk(id);
 
     if (!account) {
-      throw new HttpException(StatusCodes.NOT_FOUND, 'balance not found');
+      throw new HttpException(StatusCodes.NOT_FOUND, 'account not found');
     }
 
     return account.balance;

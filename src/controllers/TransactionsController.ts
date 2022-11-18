@@ -7,7 +7,7 @@ export default class TransactionsController {
 
   public create = async (req: Request, res: Response) => {
     const newTransaction = await this.transactionsService.create(
-      res.locals.id,
+      res.locals.accountId,
       res.locals.username,
       req.body.username,
       req.body.value,
