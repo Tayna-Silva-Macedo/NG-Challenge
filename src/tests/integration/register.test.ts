@@ -46,9 +46,30 @@ describe('Testes da rota /register', function () {
     });
   });
 
-  // describe('Verifica se não é possível cadastrar um usuário com senha inválida', function () {
-  //   it('', function () {});
-  // });
+  describe('Verifica se não é possível cadastrar um usuário com senha inválida', function () {
+    let responseRegister: Response;
+
+    before(async () => {
+      responseRegister = await chai
+        .request(app)
+        .post('/register')
+        .send(createUserInvalidPassword);
+    });
+
+    after(() => {
+      sinon.restore();
+    });
+
+    it('retorna status 400', () => {
+      expect(responseRegister.status).to.be.equal(400);
+    });
+
+    it('retorna uma mensagem de erro', () => {
+      expect(responseRegister.body).to.be.deep.equal({
+        message: 'invalid password',
+      });
+    });
+  });
 
   // describe('Verifica se não é possível cadastrar um usuário com username que já existe', function () {
   //   it('', function () {});
