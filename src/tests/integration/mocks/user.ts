@@ -12,25 +12,4 @@ const userFind = {
   accountId: 1,
 };
 
-const createUserInvalidUsername = {
-  username: 'ta',
-  password: '1234567AbC',
-};
-
-const createUserInvalidPassword = {
-  username: 'taynasm',
-  password: '123',
-};
-
-const createUserValid = {
-  username: 'taynasm',
-  password: '1234567AbC',
-};
-
-export {
-  userCreated,
-	userFind,
-  createUserInvalidUsername,
-  createUserInvalidPassword,
-  createUserValid,
-};
+export { userCreated, userFind };

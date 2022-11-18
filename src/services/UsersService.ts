@@ -67,7 +67,7 @@ export default class UsersService implements IUsersService {
     if (!user || !Bcryptjs.compare(obj.password, user.password)) {
       throw new HttpException(
         StatusCodes.UNAUTHORIZED,
-        'Incorrect email or password',
+        'incorrect email or password',
       );
     }
 

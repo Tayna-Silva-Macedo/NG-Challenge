@@ -5,13 +5,7 @@ import chaiHttp from 'chai-http';
 import Account from '../../database/models/Account';
 import User from '../../database/models/User';
 
-import {
-  userCreated,
-  userFind,
-  createUserInvalidUsername,
-  createUserInvalidPassword,
-  createUserValid,
-} from './mocks/user';
+import { userCreated, userFind } from './mocks/user';
 
 import { accountOutput } from './mocks/account';
 
@@ -27,10 +21,10 @@ describe('Testes da rota /register', function () {
     let responseRegister: Response;
 
     before(async () => {
-      responseRegister = await chai
-        .request(app)
-        .post('/register')
-        .send(createUserInvalidUsername);
+      responseRegister = await chai.request(app).post('/register').send({
+        username: 'ta',
+        password: '1234567AbC',
+      });
     });
 
     after(() => {
@@ -52,10 +46,10 @@ describe('Testes da rota /register', function () {
     let responseRegister: Response;
 
     before(async () => {
-      responseRegister = await chai
-        .request(app)
-        .post('/register')
-        .send(createUserInvalidPassword);
+      responseRegister = await chai.request(app).post('/register').send({
+        username: 'taynasm',
+        password: '123',
+      });
     });
 
     after(() => {
@@ -108,7 +102,10 @@ describe('Testes da rota /register', function () {
       sinon.stub(User, 'findOne').resolves(null);
       sinon.stub(Account, 'create').resolves(accountOutput as Account);
 
-      responseRegister = await chai.request(app).post('/register').send(createUserValid);
+      responseRegister = await chai.request(app).post('/register').send({
+        username: 'taynasm',
+        password: '1234567AbC',
+      });
     });
 
     after(() => {

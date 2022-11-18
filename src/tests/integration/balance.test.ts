@@ -74,8 +74,8 @@ describe('Testes da rota /balance', () => {
         .onFirstCall()
         .resolves(null)
         .onSecondCall()
-        .resolves(userCreated as User);
-      sinon.stub(Account, 'create').resolves();
+        .resolves(userFind as User);
+      sinon.stub(Account, 'create').resolves(accountOutput as Account);
       sinon.stub(Account, 'findByPk').resolves(accountOutput as Account);
 
       await chai.request(app).post('/register').send({
