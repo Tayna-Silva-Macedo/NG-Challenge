@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import chai from 'chai';
-import chaiHttp from 'chai-http'
+import chaiHttp from 'chai-http';
 
 import Account from '../../database/models/Account';
 import User from '../../database/models/User';
@@ -20,9 +20,7 @@ describe('Testes da rota /balance', () => {
     let responseBalance: Response;
 
     before(async () => {
-      responseBalance = await chai
-        .request(app)
-        .get('/balance')
+      responseBalance = await chai.request(app).get('/balance');
     });
 
     after(() => {
@@ -34,7 +32,9 @@ describe('Testes da rota /balance', () => {
     });
 
     it('retorna mensagem de erro', () => {
-      expect(responseBalance.body).to.be.deep.equal({ message: 'Token not found' });
+      expect(responseBalance.body).to.be.deep.equal({
+        message: 'Token not found',
+      });
     });
   });
 
@@ -57,7 +57,9 @@ describe('Testes da rota /balance', () => {
     });
 
     it('retorna mensagem de erro', () => {
-      expect(responseBalance.body).to.be.deep.equal({ message: 'Token must be a valid token' });
+      expect(responseBalance.body).to.be.deep.equal({
+        message: 'Token must be a valid token',
+      });
     });
   });
 
@@ -68,7 +70,12 @@ describe('Testes da rota /balance', () => {
 
     before(async () => {
       sinon.stub(User, 'create').resolves(userCreated as User);
-      sinon.stub(User, 'findOne').resolves(userFind as User);
+      sinon
+        .stub(User, 'findOne')
+        .onFirstCall()
+        .resolves(null)
+        .onSecondCall()
+        .resolves(userCreated as User);
       sinon.stub(Account, 'create').resolves();
       sinon.stub(Account, 'findByPk').resolves(accountOutput as Account);
 

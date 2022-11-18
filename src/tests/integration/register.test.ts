@@ -13,6 +13,8 @@ import {
   createUserValid,
 } from './mocks/user';
 
+import { accountOutput } from './mocks/account';
+
 import { Response } from 'superagent';
 import app from '../../app';
 
@@ -97,8 +99,28 @@ describe('Testes da rota /register', function () {
       });
     });
   });
-});
 
-// describe('Verifica se é possível cadastrar um usuário com sucesso', function () {
-//   it('', function () {});
-// });
+  describe('Verifica se é possível cadastrar um usuário com sucesso', function () {
+    let responseRegister: Response;
+
+    before(async () => {
+      sinon.stub(User, 'create').resolves(userCreated as User);
+      sinon.stub(User, 'findOne').resolves(null);
+      sinon.stub(Account, 'create').resolves(accountOutput as Account);
+
+      responseRegister = await chai.request(app).post('/register').send(createUserValid);
+    });
+
+    after(() => {
+      sinon.restore();
+    });
+
+    it('retorna status 201', () => {
+      expect(responseRegister.status).to.be.equal(201);
+    });
+
+    it('retorna o usuário criado', () => {
+      expect(responseRegister.body).to.be.deep.equal(userCreated);
+    });
+  });
+});
