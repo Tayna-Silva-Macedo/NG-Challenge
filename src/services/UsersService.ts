@@ -14,16 +14,28 @@ export default class UsersService implements IUsersService {
     private accountsModel: typeof Account,
   ) {}
 
-  private static validUsername(username: string): void {
+  private async findByUsername(username: string): Promise<User | null> {
+    const user = await this.usersModel.findOne({ where: { username } });
+
+    return user;
+  }
+
+  private async validateUsername(username: string): Promise<void> {
     if (username.length < 3) {
       throw new HttpException(
         StatusCodes.BAD_REQUEST,
         'username must be at least 3 characters',
       );
     }
+
+    const user = await this.findByUsername(username);
+
+    if (user) {
+      throw new HttpException(StatusCodes.CONFLICT, 'user already registered');
+    }
   }
 
-  private static validPassword(password: string): void {
+  private static validatePassword(password: string): void {
     const regexPassword = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     if (!regexPassword.test(password)) {
@@ -31,27 +43,9 @@ export default class UsersService implements IUsersService {
     }
   }
 
-  private async findByUsername(
-    username: string,
-    returnUser: boolean,
-  ): Promise<User> {
-    const user = await this.usersModel.findOne({ where: { username } });
-
-    if (user && !returnUser) {
-      throw new HttpException(StatusCodes.CONFLICT, 'user already registered');
-    }
-
-    if (!user && returnUser) {
-      throw new HttpException(StatusCodes.NOT_FOUND, 'user not found');
-    }
-
-    return user as User;
-  }
-
-  async create(obj: IUser): Promise<IUser> {
-    UsersService.validUsername(obj.username);
-    UsersService.validPassword(obj.password);
-    await this.findByUsername(obj.username, false);
+  async create(obj: IUser): Promise<User> {
+    UsersService.validatePassword(obj.password);
+    await this.validateUsername(obj.username);
 
     const newAccount = await this.accountsModel.create({ balance: 100 });
     const accountId = newAccount.id;
@@ -68,7 +62,7 @@ export default class UsersService implements IUsersService {
   }
 
   async login(obj: IUser): Promise<string> {
-    const user = await this.findByUsername(obj.username, true);
+    const user = await this.findByUsername(obj.username);
 
     if (!user || !Bcryptjs.compare(obj.password, user.password)) {
       throw new HttpException(

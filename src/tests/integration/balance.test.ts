@@ -64,7 +64,6 @@ describe('Testes da rota /balance', () => {
   });
 
   describe('Verifica se é retornado o saldo na conta corretamente', () => {
-    let responseRegister: Response;
     let responseLogin: Response;
     let responseBalance: Response;
 
@@ -79,7 +78,7 @@ describe('Testes da rota /balance', () => {
       sinon.stub(Account, 'create').resolves();
       sinon.stub(Account, 'findByPk').resolves(accountOutput as Account);
 
-      responseRegister = await chai.request(app).post('/register').send({
+      await chai.request(app).post('/register').send({
         username: 'taynasm',
         password: '1234567AbC',
       });
