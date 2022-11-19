@@ -7,7 +7,7 @@ import User from '../../database/models/User';
 
 import { accountOutput, accountOutput2 } from './mocks/account';
 import { userCreated, userCreated2, userFind, userFind2 } from './mocks/user';
-import { allTransactionsFilterOutput, allTransactionsOutput, transactionCreated } from './mocks/transaction'
+import { allTransactionsFilterOutput, allTransactionsOutputString, allTransactionsOutputDate, transactionCreated } from './mocks/transaction'
 
 import { Response } from 'superagent';
 import app from '../../app';
@@ -225,7 +225,7 @@ describe('Testes da rota /transactions', () => {
         .resolves(userFind as User)
       sinon
         .stub(Account, 'create').resolves(accountOutput as Account)
-      sinon.stub(Transaction, 'findAll').resolves(allTransactionsOutput as Transaction[]);
+      sinon.stub(Transaction, 'findAll').resolves(allTransactionsOutputDate as Transaction[]);
 
       await chai.request(app).post('/register').send({
         username: 'taynasm',
@@ -253,8 +253,8 @@ describe('Testes da rota /transactions', () => {
       expect(responseTransaction.status).to.be.equal(200);
     });
 
-    it('retorna a transferência criada', () => {
-      expect(responseTransaction.body).to.be.deep.equal(allTransactionsOutput);
+    it('retorna todas as transferências', () => {
+      expect(responseTransaction.body).to.be.deep.equal(allTransactionsOutputString);
     });
   });
 
@@ -273,7 +273,7 @@ describe('Testes da rota /transactions', () => {
         .resolves(userFind as User)
       sinon
         .stub(Account, 'create').resolves(accountOutput as Account)
-      sinon.stub(Transaction, 'findAll').resolves(allTransactionsFilterOutput as Transaction[]);
+      sinon.stub(Transaction, 'findAll').resolves(allTransactionsOutputDate as Transaction[]);
 
       await chai.request(app).post('/register').send({
         username: 'taynasm',
@@ -289,8 +289,8 @@ describe('Testes da rota /transactions', () => {
 
       responseTransaction = await chai
         .request(app)
-        .get('/transactions?2022-11-18')
-        .set('authorization', token);
+        .get('/transactions?date=2022-11-18')
+        .set('authorization', token);    
     });
 
     after(() => {
@@ -301,7 +301,7 @@ describe('Testes da rota /transactions', () => {
       expect(responseTransaction.status).to.be.equal(200);
     });
 
-    it('retorna a transferência criada', () => {
+    it('retorna todas as transferências filtrando pela data', () => {
       expect(responseTransaction.body).to.be.deep.equal(allTransactionsFilterOutput);
     });
   });
