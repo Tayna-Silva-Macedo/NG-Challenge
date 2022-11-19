@@ -3,4 +3,9 @@ const accountOutput = {
   balance: 100,
 };
 
-export { accountOutput };
+const accountOutput2 = {
+  id: 2,
+  balance: 100,
+};
+
+export { accountOutput, accountOutput2 };

@@ -14,7 +14,7 @@ class TransactionsController {
     constructor(transactionsService) {
         this.transactionsService = transactionsService;
         this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const newTransaction = yield this.transactionsService.create(res.locals.id, res.locals.username, req.body.username, req.body.value);
+            const newTransaction = yield this.transactionsService.create(res.locals.accountId, res.locals.username, req.body.username, req.body.value);
             return res.status(http_status_codes_1.StatusCodes.CREATED).json(newTransaction);
         });
         this.findAll = (req, res) => __awaiter(this, void 0, void 0, function* () {

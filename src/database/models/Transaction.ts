@@ -40,7 +40,7 @@ Transaction.init(
     modelName: 'transactions',
     timestamps: true,
     updatedAt: false,
-  }
+  },
 );
 
 Transaction.belongsTo(Account, {

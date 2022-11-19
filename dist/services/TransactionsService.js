@@ -21,16 +21,14 @@ class TransactionsService {
         this.accountsModel = accountsModel;
         this.usersModel = usersModel;
     }
-    static validUsername(usernameCashOut, usernameCashIn) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (usernameCashIn === usernameCashOut) {
-                throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'cannot transfer to self');
-            }
-        });
+    static validateUsername(usernameCashOut, usernameCashIn) {
+        if (usernameCashIn === usernameCashOut) {
+            throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'cannot transfer to yourself');
+        }
     }
-    validBalance(id, value) {
+    validateBalance(accountId, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            const account = yield this.accountsModel.findByPk(id);
+            const account = yield this.accountsModel.findByPk(accountId);
             if (!account) {
                 throw new HttpException_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'account not found');
             }
@@ -50,14 +48,19 @@ class TransactionsService {
             return user.id;
         });
     }
-    create(id, usernameCashOut, usernameCashIn, value) {
+    updateBalance(value, idCashOut, idCashIn) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield TransactionsService.validUsername(usernameCashOut, usernameCashIn);
-            yield this.validBalance(id, value);
-            const idCashOut = id;
-            const idCashIn = yield this.findIdCashIn(usernameCashIn);
             yield this.accountsModel.decrement({ balance: value }, { where: { id: idCashOut } });
             yield this.accountsModel.increment({ balance: value }, { where: { id: idCashIn } });
+        });
+    }
+    create(accountId, usernameCashOut, usernameCashIn, value) {
+        return __awaiter(this, void 0, void 0, function* () {
+            TransactionsService.validateUsername(usernameCashOut, usernameCashIn);
+            yield this.validateBalance(accountId, value);
+            const idCashOut = accountId;
+            const idCashIn = yield this.findIdCashIn(usernameCashIn);
+            yield this.updateBalance(value, idCashOut, idCashIn);
             const newTransaction = yield this.transactionsModel.create({
                 debitedAccountId: idCashOut,
                 creditedAccountId: idCashIn,

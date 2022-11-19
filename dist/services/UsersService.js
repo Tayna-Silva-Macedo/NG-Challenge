@@ -21,34 +21,33 @@ class UsersService {
         this.usersModel = usersModel;
         this.accountsModel = accountsModel;
     }
-    static validUsername(username) {
-        if (username.length < 3) {
-            throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'username must be at least 3 characters');
-        }
+    findByUsername(username) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.usersModel.findOne({ where: { username } });
+            return user;
+        });
     }
-    static validPassword(password) {
+    validateUsername(username) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (username.length < 3) {
+                throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'username must be at least 3 characters');
+            }
+            const user = yield this.findByUsername(username);
+            if (user) {
+                throw new HttpException_1.default(http_status_codes_1.StatusCodes.CONFLICT, 'user already registered');
+            }
+        });
+    }
+    static validatePassword(password) {
         const regexPassword = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
         if (!regexPassword.test(password)) {
             throw new HttpException_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'invalid password');
         }
     }
-    findByUsername(username, returnUser) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.usersModel.findOne({ where: { username } });
-            if (user && !returnUser) {
-                throw new HttpException_1.default(http_status_codes_1.StatusCodes.CONFLICT, 'user already registered');
-            }
-            if (!user && returnUser) {
-                throw new HttpException_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'user not found');
-            }
-            return user;
-        });
-    }
     create(obj) {
         return __awaiter(this, void 0, void 0, function* () {
-            UsersService.validUsername(obj.username);
-            UsersService.validPassword(obj.password);
-            yield this.findByUsername(obj.username, false);
+            UsersService.validatePassword(obj.password);
+            yield this.validateUsername(obj.username);
             const newAccount = yield this.accountsModel.create({ balance: 100 });
             const accountId = newAccount.id;
             const passwordHash = Bcryptjs_1.default.generate(obj.password);
@@ -62,9 +61,9 @@ class UsersService {
     }
     login(obj) {
         return __awaiter(this, void 0, void 0, function* () {
-            const user = yield this.findByUsername(obj.username, true);
+            const user = yield this.findByUsername(obj.username);
             if (!user || !Bcryptjs_1.default.compare(obj.password, user.password)) {
-                throw new HttpException_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'Incorrect email or password');
+                throw new HttpException_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, 'incorrect email or password');
             }
             const payload = {
                 id: user.id,

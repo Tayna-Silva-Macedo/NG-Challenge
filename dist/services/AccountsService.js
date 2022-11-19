@@ -22,7 +22,7 @@ class AccountsService {
         return __awaiter(this, void 0, void 0, function* () {
             const account = yield this.accountsModel.findByPk(id);
             if (!account) {
-                throw new HttpException_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'balance not found');
+                throw new HttpException_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, 'account not found');
             }
             return account.balance;
         });
