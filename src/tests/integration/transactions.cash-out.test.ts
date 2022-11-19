@@ -8,9 +8,9 @@ import User from '../../database/models/User';
 import { accountOutput } from './mocks/account';
 import { userCreated, userFind } from './mocks/user';
 import {
-  allTransactionsCashInFilterOutput,
-  allTransactionsCashInOutputString,
-  allTransactionsCashInOutputDate,
+  allTransactionsCashOutOutputDate,
+  allTransactionsCashOutOutputString,
+  allTransactionsCashOutFilterOutput,
 } from './mocks/transaction';
 
 import { Response } from 'superagent';
@@ -21,8 +21,8 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Testes da rota /transactions/cash-in', () => {
-  describe('Verifica se é possível listar as transferências de cash-in com sucesso', () => {
+describe('Testes da rota /transactions/cash-out', () => {
+  describe('Verifica se é possível listar as transferências de cash-out com sucesso', () => {
     let responseLogin: Response;
     let responseTransaction: Response;
 
@@ -37,7 +37,7 @@ describe('Testes da rota /transactions/cash-in', () => {
       sinon.stub(Account, 'create').resolves(accountOutput as Account);
       sinon
         .stub(Transaction, 'findAll')
-        .resolves(allTransactionsCashInOutputDate as Transaction[]);
+        .resolves(allTransactionsCashOutOutputDate as Transaction[]);
 
       await chai.request(app).post('/register').send({
         username: 'taynasm',
@@ -53,7 +53,7 @@ describe('Testes da rota /transactions/cash-in', () => {
 
       responseTransaction = await chai
         .request(app)
-        .get('/transactions/cash-in')
+        .get('/transactions/cash-out')
         .set('authorization', token);
     });
 
@@ -65,14 +65,14 @@ describe('Testes da rota /transactions/cash-in', () => {
       expect(responseTransaction.status).to.be.equal(200);
     });
 
-    it('retorna todas as transferência cash-in', () => {
+    it('retorna todas as transferência cash-out', () => {
       expect(responseTransaction.body).to.be.deep.equal(
-        allTransactionsCashInOutputString
+        allTransactionsCashOutOutputString
       );
     });
   });
 
-  describe('Verifica se é possível listar as transferências cash-in filtrando pela data', () => {
+  describe('Verifica se é possível listar as transferências cash-out filtrando pela data', () => {
     let responseLogin: Response;
     let responseTransaction: Response;
 
@@ -87,7 +87,7 @@ describe('Testes da rota /transactions/cash-in', () => {
       sinon.stub(Account, 'create').resolves(accountOutput as Account);
       sinon
         .stub(Transaction, 'findAll')
-        .resolves(allTransactionsCashInOutputDate as Transaction[]);
+        .resolves(allTransactionsCashOutOutputDate as Transaction[]);
 
       await chai.request(app).post('/register').send({
         username: 'taynasm',
@@ -103,7 +103,7 @@ describe('Testes da rota /transactions/cash-in', () => {
 
       responseTransaction = await chai
         .request(app)
-        .get('/transactions/cash-in?date=2022-11-18')
+        .get('/transactions/cash-out?date=2022-11-18')
         .set('authorization', token);
     });
 
@@ -115,9 +115,9 @@ describe('Testes da rota /transactions/cash-in', () => {
       expect(responseTransaction.status).to.be.equal(200);
     });
 
-    it('retorna todas as transferências cash-in filtrando pela data', () => {
+    it('retorna todas as transferências cash-out filtrando pela data', () => {
       expect(responseTransaction.body).to.be.deep.equal(
-        allTransactionsCashInFilterOutput
+        allTransactionsCashOutFilterOutput
       );
     });
   });
