@@ -46,7 +46,6 @@ docker-compose up -d --build
 4. Para rodar os testes de integração é utilizado o seguinte comando:
 
 ```
-docker exec -it app_backend sh
 npm test
 ```
 
