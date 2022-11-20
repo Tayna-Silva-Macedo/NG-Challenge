@@ -2,7 +2,7 @@ const transactionCreated = {
   id: 1,
   debitedAccountId: 1,
   creditedAccountId: 2,
-  value: 15,
+  value: 50,
   createdAt: '2022-11-19T14:19:39.448Z' as unknown as Date,
 };
 
@@ -208,21 +208,21 @@ const allTransactionsCashOutOutputDate = [
     debitedAccountId: 1,
     creditedAccountId: 3,
     value: 50,
-    createdAt: new Date ('2022-11-18T22:17:12.687Z'),
+    createdAt: new Date('2022-11-18T22:17:12.687Z'),
   },
   {
     id: 2,
     debitedAccountId: 1,
     creditedAccountId: 4,
     value: 10,
-    createdAt: new Date ('2022-11-19T22:17:38.345Z'),
+    createdAt: new Date('2022-11-19T22:17:38.345Z'),
   },
   {
     id: 3,
     debitedAccountId: 1,
     creditedAccountId: 5,
     value: 3,
-    createdAt: new Date ('2022-11-18T22:17:49.922Z'),
+    createdAt: new Date('2022-11-18T22:17:49.922Z'),
   },
 ];
 

@@ -98,8 +98,8 @@ describe('Testes da rota /register', function () {
     let responseRegister: Response;
 
     before(async () => {
-      sinon.stub(User, 'create').resolves(userCreated as User);
       sinon.stub(User, 'findOne').resolves(null);
+      sinon.stub(User, 'create').resolves(userCreated as User);
       sinon.stub(Account, 'create').resolves(accountOutput as Account);
 
       responseRegister = await chai.request(app).post('/register').send({

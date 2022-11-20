@@ -6,7 +6,7 @@ import Account from '../../database/models/Account';
 import User from '../../database/models/User';
 
 import { accountOutput } from './mocks/account';
-import { userCreated, userFind } from './mocks/user';
+import { userFind, validToken } from './mocks/user';
 
 import { Response } from 'superagent';
 import app from '../../app';
@@ -64,36 +64,16 @@ describe('Testes da rota /balance', () => {
   });
 
   describe('Verifica se é retornado o saldo na conta corretamente', () => {
-    let responseLogin: Response;
     let responseBalance: Response;
 
     before(async () => {
-      sinon.stub(User, 'create').resolves(userCreated as User);
-      sinon
-        .stub(User, 'findOne')
-        .onFirstCall()
-        .resolves(null)
-        .onSecondCall()
-        .resolves(userFind as User);
-      sinon.stub(Account, 'create').resolves(accountOutput as Account);
+      sinon.stub(User, 'findOne').resolves(userFind as User);
       sinon.stub(Account, 'findByPk').resolves(accountOutput as Account);
-
-      await chai.request(app).post('/register').send({
-        username: 'taynasm',
-        password: '1234567AbC',
-      });
-
-      responseLogin = await chai.request(app).post('/login').send({
-        username: 'taynasm',
-        password: '1234567AbC',
-      });
-
-      const token = responseLogin.body.token;
 
       responseBalance = await chai
         .request(app)
         .get('/balance')
-        .set('authorization', token);
+        .set('authorization', validToken);
     });
 
     after(() => {

@@ -2,12 +2,9 @@ import sinon from 'sinon';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 
-import Account from '../../database/models/Account';
 import User from '../../database/models/User';
 
-import { userCreated } from './mocks/user';
-
-import { accountOutput } from './mocks/account';
+import { userFind } from './mocks/user';
 
 import { Response } from 'superagent';
 import app from '../../app';
@@ -48,20 +45,7 @@ describe('Testes da rota /login', function () {
     let responseLogin: Response;
 
     before(async () => {
-      sinon.stub(User, 'create').resolves(userCreated as User);
-      sinon
-        .stub(User, 'findOne')
-        .onFirstCall()
-        .resolves(null)
-        .onSecondCall()
-        .resolves(userCreated as User);
-      sinon.stub(Account, 'create').resolves(accountOutput as Account);
-      sinon.stub(Account, 'findByPk').resolves(accountOutput as Account);
-
-      await chai.request(app).post('/register').send({
-        username: 'taynasm',
-        password: '1234567AbC',
-      });
+      sinon.stub(User, 'findOne').resolves(userFind as User);
 
       responseLogin = await chai.request(app).post('/login').send({
         username: 'taynasm',
@@ -88,20 +72,7 @@ describe('Testes da rota /login', function () {
     let responseLogin: Response;
 
     before(async () => {
-      sinon.stub(User, 'create').resolves(userCreated as User);
-      sinon
-        .stub(User, 'findOne')
-        .onFirstCall()
-        .resolves(null)
-        .onSecondCall()
-        .resolves(userCreated as User);
-      sinon.stub(Account, 'create').resolves(accountOutput as Account);
-      sinon.stub(Account, 'findByPk').resolves(accountOutput as Account);
-
-      await chai.request(app).post('/register').send({
-        username: 'taynasm',
-        password: '1234567AbC',
-      });
+      sinon.stub(User, 'findOne').resolves(userFind as User);
 
       responseLogin = await chai.request(app).post('/login').send({
         username: 'taynasm',
