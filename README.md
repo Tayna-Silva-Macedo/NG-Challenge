@@ -30,9 +30,10 @@ E por fim, para os testes de integração foi utilizado ***Mocha*** e ***Chai***
 git clone git@github.com:Tayna-Silva-Macedo/NG-Challenge.git
 ```
 
-2. Acesse o diretório do projeto **NG-Challenge**:
+2. Acesse o diretório do projeto **NG-Challenge** e instale as dependências necessárias:
 ```
 cd NG-Challenge
+npm install
 ```
 
 3. Suba o container Docker para rodar os serviços utilizando o comando:
