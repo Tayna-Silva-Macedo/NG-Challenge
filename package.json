@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha -r ts-node/register ./src/tests/integration/*$NAME*.{test,spec}.ts -t 10000 --exit",
+    "build": "npx -y tsc",
+    "db:reset": "npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate",
     "start": "npm run build && npm run db:reset && node ./dist/index.js",
     "dev": "npm run build && npm run db:reset && tsnd ./src/index.ts",
-    "build": "tsc",
-    "db:reset": "npx -y tsc && npx sequelize-cli db:drop && npx sequelize-cli db:create && npx sequelize-cli db:migrate",
     "compose:up:dev": "docker-compose -f docker-compose.dev.yml up -d --build",
     "compose:down:dev": "docker-compose -f docker-compose.dev.yml down"
   },
